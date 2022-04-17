@@ -1,5 +1,15 @@
 from time import sleep
 
+def get_ids(playlist_tracks):
+    ids = []
+    for track in playlist_tracks:
+        try:
+            id = track['track']['id']
+            ids.append(id)
+        except:
+            continue
+    return ids
+
 def get_playlist_tracks(sp, playlist_id):
     results = sp.playlist_tracks(playlist_id)
     tracks = results['items']
@@ -37,5 +47,3 @@ def get_audio_features(sp, tracks):
             end += 100
         except:
             sleep(2)
-
-        
