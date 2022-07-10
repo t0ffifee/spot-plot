@@ -1,5 +1,8 @@
 # spot-plot
 tool that visualizes your personal Spotify data
 
-# running it
-run main.py with the command argument pointing to the file you got from Spotify
+# data visualization to add
+
+ - most listened artists/songs
+ - at what times of the day do I listen
+ - at what times throughout the year do I listen
