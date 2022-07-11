@@ -1,6 +1,10 @@
 # spot-plot
 tool that visualizes your personal Spotify data
 
+
+# data scraping I need
+ - I need the values of every possible song I have saved
+
 # data visualization to add
 
  - most listened artists/songs
