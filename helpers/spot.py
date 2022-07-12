@@ -1,4 +1,32 @@
 from time import sleep
+from unittest import result
+
+def get_playlist_ids(sp):
+    """
+    returns the IDs of the user's playlists
+    """
+    results = sp.current_user_playlists()
+    ids = [r['id'] for r in results['items']]
+    return ids    
+
+def get_playlist_track_ids(sp, playlist_id):
+    """
+    returns the IDs of the tracks in the playlist
+    """
+    offset = 0
+    while True:
+        response = sp.playlist_items(playlist_id,
+                                    offset=offset,
+                                    fields='items.track.id,total',
+                                    additional_types=['track'])
+        
+        if len(response['items']) == 0:
+            break
+        
+        print(response['items'])
+        offset = offset + len(response['items'])
+        print(offset, "/", response['total'])
+
 
 def parse_ids(playlist_tracks):
     ids = []
