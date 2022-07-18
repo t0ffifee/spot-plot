@@ -1,5 +1,8 @@
 from time import sleep
-from unittest import result
+import spotipy
+from spotipy.oauth2 import SpotifyClientCredentials
+from spotipy.oauth2 import SpotifyOAuth
+import os
 
 def get_playlist_ids(sp):
     """
@@ -9,24 +12,25 @@ def get_playlist_ids(sp):
     ids = [r['id'] for r in results['items']]
     return ids    
 
-def get_playlist_track_ids(sp, playlist_id):
+def get_playlist_track_metas(sp, playlist_id):
     """
-    returns the IDs of the tracks in the playlist
+    returns the names, artists and IDs of the tracks in the playlist
     """
     offset = 0
+    ids = []
+    fields = 'items.track.id, items.track.name, items.track.artists, total'
     while True:
         response = sp.playlist_items(playlist_id,
                                     offset=offset,
-                                    fields='items.track.id,total',
+                                    fields=fields,
                                     additional_types=['track'])
         
         if len(response['items']) == 0:
             break
         
-        print(response['items'])
+        ids += response['items']
         offset = offset + len(response['items'])
-        print(offset, "/", response['total'])
-
+    return ids
 
 def parse_ids(playlist_tracks):
     ids = []
@@ -52,7 +56,7 @@ def get_audio_analysis(sp, tracks):
     while True:
         try:
             analysis = sp.audio_analysis(tracks[i])
-            track_analysis.append(analysis)
+            track_analysis += analysis
             
             i += 1
             if i >= len(tracks):
@@ -64,11 +68,12 @@ def get_audio_analysis(sp, tracks):
 def get_audio_features(sp, track_ids):
     track_features = []
     start, end = 0, 100
+    # fields = 'danceability, energy, key, loudness, mode, speechiness, acousticness, instrumentalness, liveness, valence, tempo'
     while True:
         try:
             ts = track_ids[start:end]
             features = sp.audio_features(ts)
-            track_features.append(features)
+            track_features += features
 
             start += 100
             end += 100
@@ -98,3 +103,13 @@ def parse_features(track_features_mess, FEATURES):
         except:
             continue
     return track_features
+
+def setup():
+    client_id = os.environ.get('SPOT_CLIENT_ID')
+    secret = os.environ.get('SPOT_SECRET')
+    redirect = 'https://localhost/'
+    scope = "playlist-read-private"
+
+    auth_manager = SpotifyOAuth(scope=scope, client_id=client_id, client_secret=secret, redirect_uri=redirect)
+    sp = spotipy.Spotify(auth_manager=auth_manager)
+    return sp
