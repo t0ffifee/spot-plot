@@ -99,7 +99,8 @@ def parse_features(track_features_mess, FEATURES):
     for track in track_features_mess:
         try:
             f = [track[key] for key in FEATURES]
-            track_features.append(f)
+            d = dict(zip(FEATURES, f))
+            track_features.append(d)
         except:
             continue
     return track_features
